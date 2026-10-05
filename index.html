@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Banco Ribera – Banca en línea</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Región viva: anuncia cambios a lectores de pantalla -->
+  <div id="live" class="visually-hidden" role="status" aria-live="polite"></div>
+
+  <!-- ============ INICIO DE SESIÓN ============ -->
+  <main id="view-login" class="login" aria-labelledby="login-title">
+    <div class="login-card">
+      <p class="brand">Banco Ribera</p>
+      <h1 id="login-title" class="h3">Ingresa a tu banca en línea</h1>
+      <p class="text-body-secondary">Demo: usa cualquier correo válido y una clave de 6 o más caracteres.</p>
+
+      <div id="login-errors" class="alert alert-danger" role="alert" tabindex="-1" hidden></div>
+
+      <form id="login-form" novalidate>
+        <div class="mb-3">
+          <label for="email" class="form-label">Correo electrónico</label>
+          <input id="email" name="email" type="email" class="form-control" autocomplete="email" required aria-describedby="email-err">
+          <div id="email-err" class="field-error" hidden></div>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Clave</label>
+          <div class="input-group">
+            <input id="password" name="password" type="password" class="form-control" autocomplete="current-password" required aria-describedby="password-err">
+            <button type="button" id="toggle-pass" class="btn btn-outline-secondary" aria-controls="password" aria-pressed="false">Mostrar clave</button>
+          </div>
+          <div id="password-err" class="field-error" hidden></div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-100">Ingresar</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- ============ APLICACIÓN ============ -->
+  <div id="app" hidden>
+    <a class="skip-link" href="#main">Saltar al contenido principal</a>
+    <header class="topbar">
+      <p class="brand mb-0">Banco Ribera</p>
+
+      <div class="a11y-tools" role="group" aria-label="Opciones de accesibilidad">
+        <button type="button" id="font-down" class="btn btn-sm btn-outline-secondary" aria-label="Reducir tamaño del texto">A−</button>
+        <button type="button" id="font-up" class="btn btn-sm btn-outline-secondary" aria-label="Aumentar tamaño del texto">A+</button>
+        <button type="button" id="contrast" class="btn btn-sm btn-outline-secondary" aria-pressed="false">Alto contraste</button>
+      </div>
+
+      <button type="button" id="logout" class="btn btn-sm btn-outline-secondary">Cerrar sesión</button>
+    </header>
+
+    <div class="shell">
+      <nav class="sidenav" aria-label="Navegación principal">
+        <ul class="nav flex-lg-column">
+          <li class="nav-item"><a class="nav-link" href="#inicio">Resumen</a></li>
+          <li class="nav-item"><a class="nav-link" href="#transferir">Transferir</a></li>
+          <li class="nav-item"><a class="nav-link" href="#movimientos">Movimientos</a></li>
+        </ul>
+      </nav>
+
+      <main id="main" class="content">
+        <div id="notice" class="alert alert-success alert-dismissible" hidden>
+          <span id="notice-text"></span>
+          <button type="button" class="btn-close" id="notice-close" aria-label="Cerrar mensaje"></button>
+        </div>
+
+        <!-- Resumen -->
+        <section id="view-inicio" class="view" aria-labelledby="h-inicio" hidden>
+          <h1 id="h-inicio" tabindex="-1">Hola, Camila</h1>
+          <div class="total">
+            <p class="mb-1 text-body-secondary" id="total-label">Saldo total disponible</p>
+            <p class="total-amount" id="total" aria-labelledby="total-label"></p>
+            <button type="button" id="toggle-balance" class="btn btn-sm btn-outline-secondary" aria-pressed="false">Ocultar saldos</button>
+          </div>
+          <h2 class="h4 mt-4">Tus cuentas</h2>
+          <ul id="accounts" class="accounts list-unstyled"></ul>
+          <h2 class="h4 mt-4">Últimos movimientos</h2>
+          <div class="table-responsive"><table class="table" id="recent"></table></div>
+          <a href="#movimientos" class="btn btn-outline-primary">Ver todos los movimientos</a>
+        </section>
+
+        <!-- Transferir -->
+        <section id="view-transferir" class="view" aria-labelledby="h-transferir" hidden>
+          <h1 id="h-transferir" tabindex="-1">Transferir dinero</h1>
+          <div id="t-errors" class="alert alert-danger" role="alert" tabindex="-1" hidden></div>
+          <form id="t-form" novalidate class="form-narrow">
+            <div class="mb-3">
+              <label for="t-origin" class="form-label">Cuenta de origen</label>
+              <select id="t-origin" class="form-select"></select>
+            </div>
+            <div class="mb-3">
+              <label for="t-dest" class="form-label">Número de cuenta destino</label>
+              <input id="t-dest" class="form-control" inputmode="numeric" autocomplete="off" aria-describedby="t-dest-help t-dest-err" required>
+              <div id="t-dest-help" class="form-text">10 dígitos, sin espacios ni guiones.</div>
+              <div id="t-dest-err" class="field-error" hidden></div>
+            </div>
+            <div class="mb-3">
+              <label for="t-amount" class="form-label">Monto en pesos</label>
+              <input id="t-amount" class="form-control" inputmode="numeric" autocomplete="off" aria-describedby="t-amount-err" required>
+              <div id="t-amount-err" class="field-error" hidden></div>
+            </div>
+            <div class="mb-3">
+              <label for="t-note" class="form-label">Descripción <span class="text-body-secondary">(opcional)</span></label>
+              <input id="t-note" class="form-control" maxlength="40">
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg">Revisar transferencia</button>
+          </form>
+        </section>
+
+        <!-- Movimientos -->
+        <section id="view-movimientos" class="view" aria-labelledby="h-movimientos" hidden>
+          <h1 id="h-movimientos" tabindex="-1">Movimientos</h1>
+          <div class="mb-3 form-narrow">
+            <label for="filter" class="form-label">Mostrar</label>
+            <select id="filter" class="form-select">
+              <option value="all">Todos los movimientos</option>
+              <option value="in">Solo ingresos</option>
+              <option value="out">Solo egresos</option>
+            </select>
+          </div>
+          <div class="table-responsive"><table class="table" id="all"></table></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación (Bootstrap gestiona foco y tecla Esc) -->
+  <div class="modal fade" id="confirm" tabindex="-1" aria-labelledby="confirm-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="confirm-title">Confirma tu transferencia</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body"><dl id="confirm-body" class="mb-0"></dl></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="confirm-ok">Confirmar y enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
